@@ -6,3 +6,8 @@ Dockerfile for creating an image for running Elasticsearch in a Windows Server 2
 1. Extract the tarball to a folder called "Java" in the same folder as the Dockerfile.
 1. Modify the elasticsearch.yml settings file if needed to suit your environment.
 1. Run the following command from the Elasticsearch directory in powershell: `docker build .`
+
+## Run it
+```powershell
+docker run --rm -p 9200:9200 -p 9300:9300 <imageid>
+```
