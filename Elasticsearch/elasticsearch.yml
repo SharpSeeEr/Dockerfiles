@@ -1,0 +1,7 @@
+cluster.name: docker-cluster
+network.host: 0.0.0.0
+
+path.logs: C:/persistent/logs/
+path.data: C:/persistent/data/
+
+discovery.zen.minimum_master_nodes: 1
