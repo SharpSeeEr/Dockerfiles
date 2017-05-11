@@ -1,14 +1,26 @@
-FROM microsoft/windowsservercore
+FROM microsoft/nanoserver
 
-COPY Java C:/Java
-ENV JAVA_HOME C:\\Java\\jdk1.8.0_131
+# Build variable to allow passing in a specific version of Elasticsearch to download
+ARG elasticsearchversion=5.4.0
 
-ADD ["https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.0.zip", "/"]
-RUN ["powershell", "-command Expand-Archive", "-Path \\elasticsearch-5.4.0.zip", "-DestinationPath \\Elasticsearch"]
-RUN ["powershell", "-command Remove-Item", "-Path \\elasticsearch-5.4.0.zip"]
+COPY sources /
+# Set the JAVA_HOME environment variable to match the version copied in
+RUN for /d %i in (jdk*) do setx /m JAVA_HOME %~fi
 
-COPY elasticsearch.yml /elasticsearch/elasticsearch-5.4.0/config/
+# Download and extract Elasticsearch
+ADD ["https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchversion}.zip", "/"]
+RUN ["powershell", "-command Expand-Archive", "-Path \\elasticsearch-$($Env:elasticsearchversion).zip", "-DestinationPath \\"]
+RUN ["powershell", "-command Remove-Item", "-Path \\elasticsearch-$($Env:elasticsearchversion).zip"]
 
-CMD ["C:/Elasticsearch/elasticsearch-5.4.0/bin/elasticsearch.bat"]
+# ELASTIC_HOME is used by the runelasticsearch.cmd file to launch Elasticsearch.
+ENV ELASTIC_HOME C:\\elasticsearch-${elasticsearchversion}
+
+COPY elasticsearch.yml ${ELASTIC_HOME}/config/
+
+# Create a data volume and map it to the G: drive, allowing Java to call Path.toRealPath() successfully
+VOLUME c:/data
+RUN powershell Set-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' -Name 'G:' -Value '\??\C:\data' -Type String
+
+CMD ["C:/runelasticsearch.cmd"]
 
 EXPOSE 9200 9300
