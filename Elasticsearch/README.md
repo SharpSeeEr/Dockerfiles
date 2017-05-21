@@ -16,5 +16,5 @@ docker run --rm -p 9200:9200 -p 9300:9300 <imageid>
 The container will automatically create a data volume at C:\data.  To use a specific volume:
 ```powershell
 docker volume create elasticsearch
-docker run --rm -p 9200:9200 -p 9300:9300 -v elasticsearch:C:\data <imageid>
+docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -v elasticsearch:C:\data <imageid>
 ``` 
