@@ -5,3 +5,5 @@ path.logs: G:/logs/
 path.data: G:/data/
 
 discovery.zen.minimum_master_nodes: 1
+
+
